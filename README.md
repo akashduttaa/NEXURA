@@ -10,7 +10,7 @@ A visually stunning, full-stack web platform for academic scheduling and student
 
 ---
 
-## 🎨 Visual Preview
+## Visual Preview
 
 ### Landing Page
 ![Landing Page](docs/screenshots/landing.png)
@@ -20,17 +20,17 @@ A visually stunning, full-stack web platform for academic scheduling and student
 
 ---
 
-## ✨ Features
+## Features
 
-- 🧠 **AI Timetable Generator** — Genetic Algorithm with 300 generations × 60 population
-- 🔗 **Blockchain Records** — SHA-256 hash-chained immutable academic ledger
-- 📊 **Real-time Analytics** — Faculty workload, room utilization, conflict analysis
-- 🎨 **Stunning UI** — 3D particles, glassmorphism, neon glow, Framer Motion animations
-- 📱 **Fully Responsive** — Mobile, tablet, and desktop optimized
+- **AI Timetable Generator** — Genetic Algorithm with 300 generations × 60 population
+- **Blockchain Records** — SHA-256 hash-chained immutable academic ledger
+- **Real-time Analytics** — Faculty workload, room utilization, conflict analysis
+- **Stunning UI** — 3D particles, glassmorphism, neon glow, Framer Motion animations
+- **Fully Responsive** — Mobile, tablet, and desktop optimized
 
 ---
 
-## 🛠️ Step-by-Step Developer Setup Guide
+## Step-by-Step Developer Setup Guide
 
 Follow these steps to set up NEXURA on your local environment:
 
@@ -127,7 +127,7 @@ For testing and demonstration purposes, you can automatically seed the database 
 
 ---
 
-## 🔌 Environment Variables Directory
+## Environment Variables Directory
 
 ### Backend Server (`server/.env`)
 
@@ -147,7 +147,7 @@ For testing and demonstration purposes, you can automatically seed the database 
 
 ---
 
-## 🖼️ Application Screenshots
+## Application Screenshots
 
 Here are visual representations of the pages inside the NEXURA system:
 
@@ -163,7 +163,7 @@ Here are visual representations of the pages inside the NEXURA system:
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Nexura/
@@ -186,7 +186,7 @@ Nexura/
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -205,7 +205,7 @@ Nexura/
 
 ---
 
-## 🎨 Technology Specs
+## Technology Specs
 
 * **Frontend:** React 18, Vite 6, Tailwind CSS 4, Framer Motion, Three.js / React Three Fiber, Recharts, React Router v7
 * **Backend:** Node.js 20, Express 4, Mongoose / MongoDB
