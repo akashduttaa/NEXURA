@@ -17,6 +17,8 @@ export default function DashboardPage() {
   const [students, setStudents] = useState([]);
   const [faculty, setFaculty] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+const [selectedType, setSelectedType] = useState('All');
 
   useEffect(() => {
     const load = async () => {
@@ -37,7 +39,22 @@ export default function DashboardPage() {
   if (loading) return <PageTransition><div className="min-h-screen pt-24"><LoadingSpinner text="Loading dashboard..." /></div></PageTransition>;
 
   const overview = analytics?.overview || {};
+  const enrolledCourses = [
+  { name: 'Data Structures & Algorithms', type: 'Theory', credits: 3 },
+  { name: 'Operating Systems', type: 'Theory', credits: 4 },
+  { name: 'Database Management Systems', type: 'Theory', credits: 3 },
+  { name: 'Web Technologies Lab', type: 'Lab', credits: 2 },
+];
+const filteredCourses = enrolledCourses.filter((course) => {
+  const matchesSearch = course.name
+    .toLowerCase()
+    .includes(searchTerm.toLowerCase());
 
+  const matchesType =
+    selectedType === 'All' || course.type === selectedType;
+
+  return matchesSearch && matchesType;
+});
   return (
     <PageTransition>
       <div className="min-h-screen pt-20 pb-12 px-4">
@@ -159,9 +176,31 @@ export default function DashboardPage() {
                   </div>
                 </GlassCard>
                 <GlassCard hover={false}>
-                  <h3 className="text-lg font-semibold mb-4">Enrolled Courses</h3>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+  <h3 className="text-lg font-semibold">Enrolled Courses</h3>
+
+  <div className="flex gap-3">
+    <input
+      type="text"
+      placeholder="Search courses..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white outline-none focus:border-cyan-400"
+    />
+
+    <select
+      value={selectedType}
+      onChange={(e) => setSelectedType(e.target.value)}
+      className="px-3 py-2 rounded-lg bg-black border border-white/10 text-sm text-white"
+    >
+      <option value="All">All</option>
+      <option value="Theory">Theory</option>
+      <option value="Lab">Lab</option>
+    </select>
+  </div>
+</div>
                   <div className="grid sm:grid-cols-2 gap-3">
-                    {['Data Structures & Algorithms', 'Operating Systems', 'Database Management Systems', 'Web Technologies Lab'].map((c, i) => (
+                    {filteredCourses.map((course, i) => (
                       <div key={i} className="p-4 rounded-lg bg-white/3 border border-white/5 hover:border-nexura-cyan/20 transition-colors">
                         <div className="text-nexura-text font-medium text-sm">{c}</div>
                         <div className="text-xs text-nexura-text-muted mt-1">CS30{i + 1} · {i === 3 ? 2 : i + 3} Credits</div>
