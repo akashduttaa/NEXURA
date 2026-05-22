@@ -4,6 +4,8 @@ import Faculty from '../models/Faculty.js';
 import Room from '../models/Room.js';
 import Student from '../models/Student.js';
 import { auth, authorize } from '../middleware/auth.js';
+// Import our global response utility format handler
+import ApiResponse from '../utils/ApiResponse.js';
 
 const router = Router();
 
@@ -50,16 +52,19 @@ router.get('/', auth, authorize('admin'), async (req, res) => {
       collectionRate: Math.round((students.filter(s => s.feesPaid).length / students.length) * 100)
     };
 
-    res.json({
-      success: true,
-      data: {
-        overview: { totalStudents: students.length, totalFaculty: faculty.length, totalCourses: courses.length, totalRooms: rooms.length },
-        facultyWorkload: workload,
-        roomUtilization: roomUtil,
-        departmentStats: deptStats,
-        feeStats
-      }
-    });
+    // Pack data together for formatting wrapper
+    const analyticsData = {
+      overview: { totalStudents: students.length, totalFaculty: faculty.length, totalCourses: courses.length, totalRooms: rooms.length },
+      facultyWorkload: workload,
+      roomUtilization: roomUtil,
+      departmentStats: deptStats,
+      feeStats
+    };
+
+    // Standardized Response using our new ApiResponse utility class
+    return res.status(200).json(
+      new ApiResponse(200, analyticsData, 'Analytics fetched successfully')
+    );
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

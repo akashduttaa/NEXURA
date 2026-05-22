@@ -5,6 +5,8 @@ import nodemailer from 'nodemailer';
 import User from '../models/User.js';
 import Student from '../models/Student.js';
 import Faculty from '../models/Faculty.js';
+// Step 1: Import our new global ApiResponse utility
+import ApiResponse from '../utils/ApiResponse.js';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'nexura_super_secret_key_2026';
@@ -20,7 +22,6 @@ const getTransporter = () => {
       }
     });
   }
-  // Fallback for testing
   return nodemailer.createTransport({
     host: 'smtp.ethereal.email',
     port: 587,
@@ -33,19 +34,14 @@ const getTransporter = () => {
 
 const transporter = getTransporter();
 
-// Verify connection configuration on startup
 transporter.verify(function (error, success) {
   if (error) {
     console.error("❌ SMTP Transporter Error:", error.message);
-    if (error.message.includes('535')) {
-      console.error("💡 TIP: If using Gmail, you MUST use a 16-character 'App Password', not your regular login password.");
-    }
   } else {
     console.log("✅ SMTP Server is ready to take our messages");
   }
 });
 
-// Helper to send OTP
 const sendOTP = async (email, otp) => {
   console.log(`\n========================================`);
   console.log(`🔐 OTP for ${email}: ${otp}`);
@@ -53,16 +49,6 @@ const sendOTP = async (email, otp) => {
   
   if (!process.env.EMAIL_USER) {
     return { success: false, error: 'No email service configured' };
-  }
-
-  // Gmail App Password validation warning
-  if (process.env.EMAIL_USER.includes('@gmail.com')) {
-    const pass = process.env.EMAIL_PASS || '';
-    const isAppPassword = /^[a-z]{16}$/.test(pass.replace(/\s/g, '').toLowerCase());
-    if (!isAppPassword) {
-      console.warn("⚠️  WARNING: Your EMAIL_PASS doesn't look like a Google App Password (16 lowercase letters).");
-      console.warn("   Emails will likely fail with '535 Authentication failed'.");
-    }
   }
 
   try {
@@ -80,11 +66,14 @@ const sendOTP = async (email, otp) => {
   }
 };
 
+// ==========================================
+// ROUTES REFACTORED TO USE STANDARDIZED API FORMAT
+// ==========================================
+
 router.post('/signup', async (req, res) => {
   try {
     const { name, email, password, role, referenceId } = req.body;
     
-    // Check if user exists
     let user = await User.findOne({ email });
     if (user && user.isVerified) {
       return res.status(400).json({ success: false, message: 'User already exists and is verified' });
@@ -93,7 +82,7 @@ router.post('/signup', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
     if (user && !user.isVerified) {
       user.name = name;
@@ -113,13 +102,15 @@ router.post('/signup', async (req, res) => {
     const emailResult = await sendOTP(email, otp);
     
     if (emailResult.success) {
-      res.json({ success: true, message: 'OTP sent successfully. Please verify your email.' });
+      // Standardized Response
+      return res.status(200).json(
+        new ApiResponse(200, null, 'OTP sent successfully. Please verify your email.')
+      );
     } else {
-      res.json({ 
-        success: true, 
-        message: `Account created, but email delivery failed (${emailResult.error}). For testing, find your OTP in the server console: ${otp}`,
-        debugOtp: otp // Only for dev testing
-      });
+      // Standardized Response with debug data
+      return res.status(200).json(
+        new ApiResponse(200, { debugOtp: otp }, `Account created, but email delivery failed (${emailResult.error}). For testing, find your OTP in the server console: ${otp}`)
+      );
     }
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -144,19 +135,21 @@ router.post('/verify-otp', async (req, res) => {
     user.otpExpiry = undefined;
     await user.save();
 
-    // Generate token
     const token = jwt.sign(
       { id: user._id, role: user.role, referenceId: user.referenceId },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
 
-    res.json({ 
-      success: true, 
-      message: 'Account verified successfully',
+    const responseData = {
       token,
       user: { id: user._id, name: user.name, email: user.email, role: user.role, referenceId: user.referenceId }
-    });
+    };
+
+    // Standardized Response
+    return res.status(200).json(
+      new ApiResponse(200, responseData, 'Account verified successfully')
+    );
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -186,11 +179,15 @@ router.post('/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    res.json({
-      success: true,
+    const responseData = {
       token,
       user: { id: user._id, name: user.name, email: user.email, role: user.role, referenceId: user.referenceId }
-    });
+    };
+
+    // Standardized Response
+    return res.status(200).json(
+      new ApiResponse(200, responseData, 'Login successful')
+    );
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -200,17 +197,14 @@ import Course from '../models/Course.js';
 import Room from '../models/Room.js';
 import { studentData, facultyData, courseData, roomData } from '../seed/seedData.js';
 
-// Quick Demo Mode Setup
 router.post('/demo-setup', async (req, res) => {
   try {
-    // Clear all DB
     await User.deleteMany({});
     await Student.deleteMany({});
     await Faculty.deleteMany({});
     await Course.deleteMany({});
     await Room.deleteMany({});
     
-    // Insert base data
     await Course.insertMany(courseData);
     await Room.insertMany(roomData);
     await Faculty.insertMany(facultyData);
@@ -227,7 +221,10 @@ router.post('/demo-setup', async (req, res) => {
 
     await User.insertMany(users);
 
-    res.json({ success: true, message: 'Database seeded and Demo users created: admin@, faculty@, student@ (password: demo123)' });
+    // Standardized Response
+    return res.status(200).json(
+      new ApiResponse(200, null, 'Database seeded and Demo users created: admin@, faculty@, student@ (password: demo123)')
+    );
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
