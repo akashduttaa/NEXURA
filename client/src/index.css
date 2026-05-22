@@ -1,7 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
 
 @theme {
+  /* Default Light Mode Colors */
+  --color-nexura-bg: #f8fafc;
+  --color-nexura-surface: rgba(0, 0, 0, 0.02);
+  --color-nexura-glass: rgba(255, 255, 255, 0.7);
+  --color-nexura-border: rgba(0, 0, 0, 0.08);
+  --color-nexura-cyan: #0ea5e9;
+  --color-nexura-purple: #8b5cf6;
+  --color-nexura-pink: #ec4899;
+  --color-nexura-emerald: #10b981;
+  --color-nexura-amber: #f59e0b;
+  --color-nexura-red: #ef4444;
+  --color-nexura-text: #0f172a;
+  --color-nexura-text-dim: #475569;
+  --color-nexura-text-muted: #64748b;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Orbitron', monospace;
+}
+
+/* Override values when .dark class is active on root */
+:where(.dark) {
   --color-nexura-bg: #0a0a1a;
   --color-nexura-surface: rgba(255, 255, 255, 0.05);
   --color-nexura-glass: rgba(255, 255, 255, 0.08);
@@ -15,11 +37,7 @@
   --color-nexura-text: #f1f5f9;
   --color-nexura-text-dim: #94a3b8;
   --color-nexura-text-muted: #64748b;
-
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-display: 'Orbitron', monospace;
 }
-
 
 @layer base {
   html {
@@ -33,6 +51,7 @@
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   #root {
@@ -48,17 +67,19 @@
 
 /* Glass morphism utility */
 .glass {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--color-nexura-glass);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--color-nexura-border);
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .glass-strong {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-nexura-glass);
   backdrop-filter: blur(32px);
   -webkit-backdrop-filter: blur(32px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--color-nexura-border);
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 /* Neon glow effects */
@@ -84,7 +105,7 @@
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #00f0ff, #a855f7, #f472b6);
+  background: linear-gradient(135deg, var(--color-nexura-cyan), var(--color-nexura-purple), var(--color-nexura-pink));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -99,7 +120,7 @@
   content: '';
   position: absolute;
   inset: -1px;
-  background: linear-gradient(135deg, #00f0ff, #a855f7, #f472b6, #00f0ff);
+  background: linear-gradient(135deg, var(--color-nexura-cyan), var(--color-nexura-purple), var(--color-nexura-pink), var(--color-nexura-cyan));
   background-size: 300% 300%;
   border-radius: inherit;
   z-index: -1;

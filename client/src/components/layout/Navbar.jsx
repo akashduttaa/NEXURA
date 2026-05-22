@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LayoutDashboard, Calendar, Link2, BarChart3, Home, Menu, X, User, LogOut, LogIn } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import ThemeToggle from '../ui/ThemeToggle';
 
 const navItems = [
   { path: '/', label: 'Home', icon: Home },
@@ -63,6 +64,11 @@ export default function Navbar() {
             
             <div className="w-px h-6 bg-white/10 mx-2"></div>
             
+            {/* Theme Toggle Added to Desktop Actions */}
+            <div className="mr-2">
+              <ThemeToggle />
+            </div>
+
             {isAuthenticated ? (
               <div className="flex items-center gap-4 pl-2">
                 <span className="text-sm font-medium text-nexura-cyan flex items-center gap-2">
@@ -82,19 +88,24 @@ export default function Navbar() {
               </div>
             ) : (
               <Link
-                to="/login"
-                className="flex items-center gap-2 px-5 py-2 ml-2 rounded-lg text-sm font-semibold bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all hover:border-nexura-cyan/50"
-              >
+               to="/login"
+               className="flex items-center gap-2 px-5 py-2 ml-2 rounded-lg text-sm font-semibold bg-nexura-surface hover:bg-white/10 text-nexura-text border border-nexura-border transition-all hover:border-nexura-cyan/50"
+               >
                 <LogIn className="w-4 h-4" />
                 Sign In
-              </Link>
+                </Link>
             )}
           </div>
 
-          {/* Mobile toggle */}
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden text-nexura-text-dim hover:text-nexura-text p-2">
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile Right Side Tools */}
+          <div className="flex items-center gap-2 md:hidden">
+            {/* Theme Toggle Added to Mobile Header View */}
+            <ThemeToggle />
+            
+            <button onClick={() => setMobileOpen(!mobileOpen)} className="text-nexura-text-dim hover:text-nexura-text p-2">
+              {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
       </div>
 
