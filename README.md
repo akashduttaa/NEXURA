@@ -16,6 +16,24 @@ A visually stunning, full-stack web platform for academic scheduling and student
 - 🎨 **Stunning UI** — 3D particles, glassmorphism, neon glow, Framer Motion animations
 - 📱 **Fully Responsive** — Mobile, tablet, and desktop optimized
 
+## Screenshots
+
+### Landing Page
+![Landing](./screenshots/01-landing-page.png)
+
+### Dashboard
+![Dashboard](./screenshots/02-dashboard-admin.png)
+
+### Timetable Generation
+![Timetable](./screenshots/03-timetable-generation.png)
+
+### Blockchain Ledger
+![Blockchain](./screenshots/04-blockchain-ledger.png)
+
+### Analytics
+![Analytics](./screenshots/05-analytics-panel.png)
+
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -48,9 +66,8 @@ Frontend starts on `http://localhost:3000`
 7. Check **Analytics** → Faculty workload charts, room utilization
 
 ## 📁 Project Structure
-
 ```
-Nexura/
+NEXURA/
 ├── client/          # React + Vite Frontend
 │   ├── src/
 │   │   ├── components/   # UI, 3D, layout components
@@ -79,7 +96,7 @@ Nexura/
 | POST | `/api/transactions` | Add blockchain record |
 | GET | `/api/analytics` | Get analytics data |
 
-## 🎨 Tech Stack
+## 🛠️ Tech Stack
 
 **Frontend:** React 18, Vite 6, Tailwind CSS 4, Framer Motion, Three.js / React Three Fiber, Recharts, React Router v7
 
@@ -88,3 +105,29 @@ Nexura/
 **AI:** Custom Genetic Algorithm (population 60, 300 generations, tournament selection, uniform crossover, adaptive mutation)
 
 **Blockchain:** Simulated SHA-256 hash chain with proof-of-work (difficulty 2)
+
+## 🔐 Environment Variables
+
+Create a `.env` file in both `server/` and `client/` directories based on the examples below.
+
+### Server (.env)
+| Variable | Description | Example | Required |
+|----------|-------------|---------|----------|
+| PORT | Server port | `5000` | No (defaults to 5000) |
+| MONGODB_URI | MongoDB connection string | `mongodb://localhost:27017/nexura` | No (defaults to local MongoDB) |
+| JWT_SECRET | Secret for signing JWT tokens | `your_super_secret_key_here` | No (defaults to `nexura_super_secret_key_2026`) |
+| EMAIL_USER | Email user for sending notifications (Gmail) | `your_email@gmail.com` | No (if not set, uses Ethereal test email) |
+| EMAIL_PASS | Email password or app password | `your_email_password` | No (if not set, uses Ethereal test email) |
+
+### Client (.env)
+| Variable | Description | Example | Required |
+|----------|-------------|---------|----------|
+| VITE_API_URL | Base URL for API requests | `http://localhost:5000/api` | No (defaults to `/api` during development) |
+
+## 🤝 Contributing
+
+Please read [Contribution.md](Contribution.md) for details on our code of conduct and the process for submitting pull requests.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
