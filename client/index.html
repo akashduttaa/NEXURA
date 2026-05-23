@@ -8,6 +8,14 @@
     <meta name="keywords" content="AI, Blockchain, Academic, Timetable, Scheduling, University, Engineering" />
     <meta name="author" content="NEXURA" />
     <title>NEXURA — AI + Blockchain Academic Operating System</title>
+    <script>
+      if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+      } else {
+          document.documentElement.classList.remove('dark')
+      }
+    </script>
+  </head>
   </head>
   <body>
     <div id="root"></div>

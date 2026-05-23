@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Added useEffect
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, Calendar, Link2, BarChart3, Home, Menu, X, User, LogOut, LogIn } from 'lucide-react';
+// Added Moon and Sun to the icons list
+import { LayoutDashboard, Calendar, Link2, BarChart3, Home, Menu, X, User, LogOut, LogIn, Moon, Sun } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 
 const navItems = [
@@ -17,6 +18,33 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuthStore();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // --- DARK MODE LOGIC ADDED HERE ---
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const storedPrefs = window.localStorage.getItem('color-theme');
+      if (typeof storedPrefs === 'string') return storedPrefs;
+      
+      const userMedia = window.matchMedia('(prefers-color-scheme: dark)');
+      if (userMedia.matches) return 'dark';
+    }
+    return 'light'; // Default
+  });
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('color-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
+  // ----------------------------------
 
   return (
     <motion.nav
@@ -38,7 +66,6 @@ export default function Navbar() {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
             {navItems.map(({ path, label, icon: Icon }) => {
-              // Hide some links if not authenticated
               if (!isAuthenticated && path !== '/' && path !== '/blockchain') return null;
               
               const active = location.pathname === path;
@@ -63,6 +90,15 @@ export default function Navbar() {
             
             <div className="w-px h-6 bg-white/10 mx-2"></div>
             
+            {/* Desktop Theme Toggle Button */}
+            <button 
+              onClick={toggleTheme} 
+              className="p-2 mr-2 text-nexura-text-dim hover:text-nexura-cyan transition-colors rounded-lg hover:bg-white/5"
+              aria-label="Toggle Dark Mode"
+            >
+              {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            </button>
+
             {isAuthenticated ? (
               <div className="flex items-center gap-4 pl-2">
                 <span className="text-sm font-medium text-nexura-cyan flex items-center gap-2">
@@ -91,10 +127,20 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile toggle */}
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden text-nexura-text-dim hover:text-nexura-text p-2">
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile controls: Theme Toggle + Menu */}
+          <div className="md:hidden flex items-center gap-2">
+            {/* Mobile Theme Toggle */}
+            <button 
+              onClick={toggleTheme} 
+              className="p-2 text-nexura-text-dim hover:text-nexura-cyan transition-colors"
+            >
+              {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            </button>
+            
+            <button onClick={() => setMobileOpen(!mobileOpen)} className="text-nexura-text-dim hover:text-nexura-text p-2">
+              {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
       </div>
 
