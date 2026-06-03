@@ -13,7 +13,7 @@ A visually stunning, full-stack web platform for academic scheduling and student
 - 🧠 **AI Timetable Generator** — Genetic Algorithm with 300 generations × 60 population
 - 🔗 **Blockchain Records** — SHA-256 hash-chained immutable academic ledger
 - 📊 **Real-time Analytics** — Faculty workload, room utilization, conflict analysis
-- 🎨 **Stunning UI** — 3D particles, glassmorphism, neon glow, Framer Motion animations
+- 🎨 **Stunning UI** — 3D particle, glassmorphism, neon glow, Framer Motion animations
 - 📱 **Fully Responsive** — Mobile, tablet, and desktop optimized
 
 ## Screenshots
