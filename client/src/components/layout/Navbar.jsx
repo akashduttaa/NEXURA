@@ -1,15 +1,26 @@
-import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, Calendar, Link2, BarChart3, Home, Menu, X, User, LogOut, LogIn } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  LayoutDashboard,
+  Calendar,
+  Link2,
+  BarChart3,
+  Home,
+  Menu,
+  X,
+  User,
+  LogOut,
+  LogIn,
+} from "lucide-react";
+import { useAuthStore } from "../../store/authStore";
 
 const navItems = [
-  { path: '/', label: 'Home', icon: Home },
-  { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/timetable', label: 'Timetable', icon: Calendar },
-  { path: '/blockchain', label: 'Blockchain', icon: Link2 },
-  { path: '/analytics', label: 'Analytics', icon: BarChart3 },
+  { path: "/", label: "Home", icon: Home },
+  { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { path: "/timetable", label: "Timetable", icon: Calendar },
+  { path: "/blockchain", label: "Blockchain", icon: Link2 },
+  { path: "/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
 export default function Navbar() {
@@ -22,7 +33,7 @@ export default function Navbar() {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       className="fixed top-0 left-0 right-0 z-50 glass-strong"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -32,21 +43,26 @@ export default function Navbar() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm font-display group-hover:shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-shadow">
               N
             </div>
-            <span className="font-display text-lg font-bold gradient-text hidden sm:block">NEXURA</span>
+            <span className="font-display text-lg font-bold gradient-text hidden sm:block">
+              NEXURA
+            </span>
           </Link>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
             {navItems.map(({ path, label, icon: Icon }) => {
-              // Hide some links if not authenticated
-              if (!isAuthenticated && path !== '/' && path !== '/blockchain') return null;
-              
+              if (!isAuthenticated && path !== "/" && path !== "/blockchain")
+                return null;
               const active = location.pathname === path;
               return (
                 <Link
                   key={path}
                   to={path}
-                  className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${active ? 'text-nexura-cyan' : 'text-nexura-text-dim hover:text-nexura-text'}`}
+                  className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                    active
+                      ? "text-nexura-cyan"
+                      : "text-nexura-text-dim hover:text-nexura-text"
+                  }`}
                 >
                   <Icon className="w-4 h-4" />
                   {label}
@@ -54,25 +70,62 @@ export default function Navbar() {
                     <motion.div
                       layoutId="activeTab"
                       className="absolute inset-0 bg-nexura-cyan/10 rounded-lg border border-nexura-cyan/20"
-                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                      }}
                     />
                   )}
                 </Link>
               );
             })}
-            
-            <div className="w-px h-6 bg-white/10 mx-2"></div>
-            
+
+            <div className="w-px h-6 bg-white/10 mx-2" />
+
             {isAuthenticated ? (
-              <div className="flex items-center gap-4 pl-2">
-                <span className="text-sm font-medium text-nexura-cyan flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  {user?.name?.split(' ')[0]}
-                </span>
+              <div className="flex items-center gap-2 pl-2">
+                {/* Avatar / Profile link */}
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors group"
+                  aria-label="My profile"
+                >
+                  {user?.avatar ? (
+                    /*
+                      ✅ Navbar mini-avatar: same fix — fixed square + object-fit: cover
+                         ensures the thumbnail never stretches.
+                    */
+                    <span
+                      className="w-7 h-7 rounded-full overflow-hidden border border-nexura-cyan/40 flex-shrink-0 block"
+                      style={{ aspectRatio: "1 / 1" }}
+                    >
+                      <img
+                        src={user.avatar}
+                        alt={user.name}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          objectPosition: "center",
+                          display: "block",
+                        }}
+                      />
+                    </span>
+                  ) : (
+                    <span className="w-7 h-7 rounded-full bg-gradient-to-br from-cyan-500/20 to-purple-600/20 border border-nexura-cyan/40 flex items-center justify-center flex-shrink-0">
+                      <User className="w-3.5 h-3.5 text-nexura-cyan" />
+                    </span>
+                  )}
+                  <span className="text-sm font-medium text-nexura-cyan group-hover:text-cyan-300 transition-colors">
+                    {user?.name?.split(" ")[0]}
+                  </span>
+                </Link>
+
                 <button
                   onClick={() => {
                     logout();
-                    navigate('/');
+                    navigate("/");
                   }}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-colors"
                 >
@@ -92,8 +145,15 @@ export default function Navbar() {
           </div>
 
           {/* Mobile toggle */}
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden text-nexura-text-dim hover:text-nexura-text p-2">
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden text-nexura-text-dim hover:text-nexura-text p-2"
+          >
+            {mobileOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
           </button>
         </div>
       </div>
@@ -103,7 +163,7 @@ export default function Navbar() {
         {mobileOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden glass-strong border-t border-white/5"
           >
@@ -115,13 +175,47 @@ export default function Navbar() {
                     key={path}
                     to={path}
                     onClick={() => setMobileOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${active ? 'text-nexura-cyan bg-nexura-cyan/10' : 'text-nexura-text-dim hover:text-nexura-text hover:bg-white/5'}`}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                      active
+                        ? "text-nexura-cyan bg-nexura-cyan/10"
+                        : "text-nexura-text-dim hover:text-nexura-text hover:bg-white/5"
+                    }`}
                   >
                     <Icon className="w-5 h-5" />
                     {label}
                   </Link>
                 );
               })}
+
+              {/* Mobile profile link */}
+              {isAuthenticated && (
+                <>
+                  <div className="h-px bg-white/5 my-2" />
+                  <Link
+                    to="/profile"
+                    onClick={() => setMobileOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                      location.pathname === "/profile"
+                        ? "text-nexura-cyan bg-nexura-cyan/10"
+                        : "text-nexura-text-dim hover:text-nexura-text hover:bg-white/5"
+                    }`}
+                  >
+                    <User className="w-5 h-5" />
+                    Profile
+                  </Link>
+                  <button
+                    onClick={() => {
+                      logout();
+                      navigate("/");
+                      setMobileOpen(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-colors"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    Logout
+                  </button>
+                </>
+              )}
             </div>
           </motion.div>
         )}
