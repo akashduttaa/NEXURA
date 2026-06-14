@@ -45,76 +45,76 @@ export default function BlockchainPage() {
     setTimeout(() => setCopiedHash(null), 2000);
   };
 
+  // truncate long hashes for narrow screens
+  const shortHash = (hash, len = 12) => hash ? `${hash.slice(0, len)}...` : '';
+
   if (loading) return <PageTransition><div className="min-h-screen pt-24"><LoadingSpinner text="Loading blockchain..." /></div></PageTransition>;
 
   return (
     <PageTransition>
       <div className="min-h-screen pt-20 pb-12 px-4">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
+
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-3xl font-display font-bold gradient-text mb-2">Blockchain Records</h1>
-              <p className="text-nexura-text-dim">SHA-256 hash-chained immutable academic ledger</p>
+              <h1 className="text-2xl sm:text-3xl font-display font-bold gradient-text mb-2">Blockchain Records</h1>
+              <p className="text-nexura-text-dim text-sm sm:text-base">SHA-256 hash-chained immutable academic ledger</p>
             </div>
             <NeonButton onClick={handleAdd} loading={adding} variant="emerald" icon={Plus}>
               Add Record
             </NeonButton>
           </div>
 
-          {/* Chain Stats */}
           {stats && (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
               <GlassCard delay={0}>
-                <div className="text-sm text-nexura-text-dim mb-1">Total Blocks</div>
-                <div className="text-3xl font-bold text-nexura-cyan font-display">{stats.totalBlocks}</div>
+                <div className="text-xs sm:text-sm text-nexura-text-dim mb-1">Total Blocks</div>
+                <div className="text-2xl sm:text-3xl font-bold text-nexura-cyan font-display">{stats.totalBlocks}</div>
               </GlassCard>
               <GlassCard delay={0.1}>
-                <div className="text-sm text-nexura-text-dim mb-1">Chain Status</div>
+                <div className="text-xs sm:text-sm text-nexura-text-dim mb-1">Chain Status</div>
                 <div className="flex items-center gap-2 mt-1">
                   <StatusBadge status={stats.isValid ? 'verified' : 'error'} label={stats.isValid ? 'Valid' : 'Tampered'} />
                 </div>
               </GlassCard>
               <GlassCard delay={0.2}>
-                <div className="text-sm text-nexura-text-dim mb-1">Difficulty</div>
-                <div className="text-3xl font-bold text-purple-400 font-display">{stats.difficulty}</div>
+                <div className="text-xs sm:text-sm text-nexura-text-dim mb-1">Difficulty</div>
+                <div className="text-2xl sm:text-3xl font-bold text-purple-400 font-display">{stats.difficulty}</div>
               </GlassCard>
               <GlassCard delay={0.3}>
-                <div className="text-sm text-nexura-text-dim mb-1">Latest Hash</div>
-                <div className="text-xs font-mono text-nexura-text-muted truncate mt-2">{stats.latestHash?.slice(0, 24)}...</div>
+                <div className="text-xs sm:text-sm text-nexura-text-dim mb-1">Latest Hash</div>
+                <div className="text-xs font-mono text-nexura-text-muted truncate mt-2">{shortHash(stats.latestHash, 20)}</div>
               </GlassCard>
             </div>
           )}
 
-          {/* Visual Chain */}
           <GlassCard hover={false} className="mb-8">
-            <h3 className="text-lg font-semibold text-nexura-text mb-6 flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-semibold text-nexura-text mb-6 flex items-center gap-2">
               <Link2 className="w-5 h-5 text-nexura-cyan" /> Block Chain Visualization
             </h3>
-            <div className="flex items-center gap-2 overflow-x-auto pb-4">
+            <div className="flex items-center gap-2 overflow-x-auto pb-4 scrollbar-thin">
               {chain.slice(-8).map((block, i) => (
                 <div key={block.blockIndex} className="flex items-center gap-2">
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: i * 0.1 }}
-                    className="shrink-0 w-24 h-24 rounded-xl glass border border-nexura-cyan/20 flex flex-col items-center justify-center p-2 hover:glow-cyan transition-all"
+                    className="shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl glass border border-nexura-cyan/20 flex flex-col items-center justify-center p-2 hover:glow-cyan transition-all"
                   >
                     <div className="text-xs text-nexura-cyan font-display font-bold">#{block.blockIndex}</div>
                     <div className="text-[10px] text-nexura-text-muted mt-1 truncate w-full text-center font-mono">{block.hash?.slice(0, 8)}</div>
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-400 mt-1" />
                   </motion.div>
                   {i < chain.slice(-8).length - 1 && (
-                    <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: i * 0.1 + 0.05 }} className="w-8 h-0.5 bg-gradient-to-r from-nexura-cyan to-purple-500" />
+                    <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: i * 0.1 + 0.05 }} className="w-6 sm:w-8 h-0.5 shrink-0 bg-gradient-to-r from-nexura-cyan to-purple-500" />
                   )}
                 </div>
               ))}
             </div>
           </GlassCard>
 
-          {/* Transaction History */}
           <GlassCard hover={false}>
-            <h3 className="text-lg font-semibold text-nexura-text mb-6 flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-semibold text-nexura-text mb-6 flex items-center gap-2">
               <Clock className="w-5 h-5 text-nexura-cyan" /> Transaction History
             </h3>
             <div className="space-y-3">
@@ -128,38 +128,57 @@ export default function BlockchainPage() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.03 }}
-                      className="flex items-start gap-4 p-4 rounded-xl bg-white/3 border border-white/5 hover:border-nexura-cyan/20 transition-all group"
+                      className="flex items-start gap-3 p-3 sm:p-4 rounded-xl bg-white/3 border border-white/5 hover:border-nexura-cyan/20 transition-all group"
                     >
-                      <div className={`w-10 h-10 shrink-0 rounded-lg bg-white/5 flex items-center justify-center ${color}`}>
-                        <Icon className="w-5 h-5" />
+                      <div className={`w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-lg bg-white/5 flex items-center justify-center ${color}`}>
+                        <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
+
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
                           <span className="text-sm font-medium text-nexura-text capitalize">{tx.data?.type?.replace(/_/g, ' ')}</span>
-                          <StatusBadge status="verified" label="Verified on Blockchain" />
+                          <StatusBadge status="verified" label="Verified" />
                         </div>
+
                         {tx.data?.studentName && (
-                          <div className="text-sm text-nexura-text-dim">{tx.data.studentName} ({tx.data.studentRollNo})</div>
-                        )}
-                        {tx.data?.details && tx.data.type !== 'genesis' && (
-                          <div className="text-xs text-nexura-text-muted mt-1">
-                            {tx.data.details.course && `Course: ${tx.data.details.course}`}
-                            {tx.data.details.grade && ` · Grade: ${tx.data.details.grade}`}
-                            {tx.data.details.amount && `Amount: ₹${tx.data.details.amount?.toLocaleString()}`}
-                            {tx.data.details.certificateType && tx.data.details.certificateType}
+                          <div className="text-xs sm:text-sm text-nexura-text-dim">
+                            {tx.data.studentName}
+                            <span className="text-nexura-text-muted ml-1">({tx.data.studentRollNo})</span>
                           </div>
                         )}
+
+                        {tx.data?.details && tx.data.type !== 'genesis' && (
+                          <div className="text-xs text-nexura-text-muted mt-1 flex flex-wrap gap-x-2">
+                            {tx.data.details.course && <span>Course: {tx.data.details.course}</span>}
+                            {tx.data.details.grade && <span>Grade: {tx.data.details.grade}</span>}
+                            {tx.data.details.amount && <span>₹{tx.data.details.amount?.toLocaleString()}</span>}
+                            {tx.data.details.certificateType && <span>{tx.data.details.certificateType}</span>}
+                          </div>
+                        )}
+
+                        /* hash row — always visible on mobile, hover on desktop */
                         <div className="flex items-center gap-2 mt-2">
-                          <Hash className="w-3 h-3 text-nexura-text-muted" />
-                          <span className="text-xs font-mono text-nexura-text-muted truncate">{tx.hash}</span>
-                          <button onClick={() => copyHash(tx.hash)} className="opacity-0 group-hover:opacity-100 transition-opacity">
-                            {copiedHash === tx.hash ? <CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-nexura-text-muted hover:text-nexura-text" />}
+                          <Hash className="w-3 h-3 text-nexura-text-muted shrink-0" />
+                          <span className="text-xs font-mono text-nexura-text-muted truncate">
+                            <span className="sm:hidden">{shortHash(tx.hash, 18)}</span>
+                            <span className="hidden sm:inline">{tx.hash}</span>
+                          </span>
+                          <button
+                            onClick={() => copyHash(tx.hash)}
+                            className="shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                            aria-label="Copy hash"
+                          >
+                            {copiedHash === tx.hash
+                              ? <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+                              : <Copy className="w-3.5 h-3.5 text-nexura-text-muted hover:text-nexura-text" />
+                            }
                           </button>
                         </div>
                       </div>
-                      <div className="text-right shrink-0">
-                        <div className="text-xs text-nexura-text-muted">Block #{tx.blockIndex}</div>
-                        <div className="text-xs text-nexura-text-muted mt-1">{new Date(tx.timestamp).toLocaleTimeString()}</div>
+
+                      <div className="text-right shrink-0 flex flex-col items-end gap-1">
+                        <div className="text-xs text-nexura-text-muted">#{tx.blockIndex}</div>
+                        <div className="text-xs text-nexura-text-muted">{new Date(tx.timestamp).toLocaleTimeString()}</div>
                       </div>
                     </motion.div>
                   );
@@ -167,6 +186,7 @@ export default function BlockchainPage() {
               </AnimatePresence>
             </div>
           </GlassCard>
+
         </div>
       </div>
     </PageTransition>
