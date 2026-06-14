@@ -132,7 +132,7 @@ export default function TimetablePage() {
             )}
           </AnimatePresence>
 
-          {loading && <LoadingSpinner text="Running Genetic Algorithm... Evolving 300 generations" />}
+          {loading && <LoadingSpinner color="purple" text="Running Genetic Algorithm... Evolving 300 generations" />}
 
           {/* Timetable Grid */}
           {timetable && !loading && (

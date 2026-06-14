@@ -34,7 +34,7 @@ export default function DashboardPage() {
     load();
   }, []);
 
-  if (loading) return <PageTransition><div className="min-h-screen pt-24"><LoadingSpinner text="Loading dashboard..." /></div></PageTransition>;
+  if (loading) return <PageTransition><div className="min-h-screen pt-24"><LoadingSpinner color="cyan" text="Loading dashboard..." /></div></PageTransition>;
 
   const overview = analytics?.overview || {};
 
