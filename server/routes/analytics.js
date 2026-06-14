@@ -8,7 +8,7 @@ import { auth, authorize } from '../middleware/auth.js';
 const router = Router();
 
 // Only admin can view analytics
-router.get('/', auth, authorize('admin'), async (req, res) => {
+router.get('/', auth, authorize('admin'), async (req, res, next) => {
   try {
     const courses = await Course.find().lean();
     const faculty = await Faculty.find().lean();
@@ -61,7 +61,7 @@ router.get('/', auth, authorize('admin'), async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    next(error);
   }
 });
 

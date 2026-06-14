@@ -80,7 +80,7 @@ const sendOTP = async (email, otp) => {
   }
 };
 
-router.post('/signup', async (req, res) => {
+router.post('/signup', async (req, res, next) => {
   try {
     const { name, email, password, role, referenceId } = req.body;
     
@@ -122,11 +122,11 @@ router.post('/signup', async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    next(error);
   }
 });
 
-router.post('/verify-otp', async (req, res) => {
+router.post('/verify-otp', async (req, res, next) => {
   try {
     const { email, otp } = req.body;
     const user = await User.findOne({ email });
@@ -158,11 +158,11 @@ router.post('/verify-otp', async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email, role: user.role, referenceId: user.referenceId }
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    next(error);
   }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
   try {
     const { email, password } = req.body;
     
@@ -192,7 +192,7 @@ router.post('/login', async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email, role: user.role, referenceId: user.referenceId }
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    next(error);
   }
 });
 
@@ -201,7 +201,7 @@ import Room from '../models/Room.js';
 import { studentData, facultyData, courseData, roomData } from '../seed/seedData.js';
 
 // Quick Demo Mode Setup
-router.post('/demo-setup', async (req, res) => {
+router.post('/demo-setup', async (req, res, next) => {
   try {
     // Clear all DB
     await User.deleteMany({});
@@ -229,7 +229,7 @@ router.post('/demo-setup', async (req, res) => {
 
     res.json({ success: true, message: 'Database seeded and Demo users created: admin@, faculty@, student@ (password: demo123)' });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    next(error);
   }
 });
 

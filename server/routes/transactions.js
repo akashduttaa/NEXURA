@@ -4,12 +4,12 @@ import { auth, authorize } from '../middleware/auth.js';
 
 const router = Router();
 
-router.get('/', auth, (req, res) => {
+router.get('/', auth, (req, res, next) => {
   const chain = blockchain.getChain();
   res.json({ success: true, data: chain, stats: blockchain.getStats() });
 });
 
-router.post('/', auth, (req, res) => {
+router.post('/', auth, (req, res, next) => {
   try {
     const { type, studentName, studentRollNo, details } = req.body;
     let block;
@@ -32,11 +32,11 @@ router.post('/', auth, (req, res) => {
       chainValid: blockchain.isChainValid()
     });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    next(error);
   }
 });
 
-router.get('/validate', auth, (req, res) => {
+router.get('/validate', auth, (req, res, next) => {
   res.json({ success: true, valid: blockchain.isChainValid(), stats: blockchain.getStats() });
 });
 

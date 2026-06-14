@@ -4,12 +4,12 @@ import { auth } from '../middleware/auth.js';
 
 const router = Router();
 
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, async (req, res, next) => {
   try {
     const faculty = await Faculty.find().lean();
     res.json({ success: true, data: faculty });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    next(error);
   }
 });
 
