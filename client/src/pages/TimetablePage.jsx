@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Zap, AlertTriangle, CheckCircle, RefreshCw, UserX, Sparkles } from 'lucide-react';
 import PageTransition from '../components/layout/PageTransition';
@@ -23,6 +23,31 @@ const courseColors = {
   'EC303': 'bg-violet-500/20 border-violet-500/30 text-violet-300',
   'ME301': 'bg-orange-500/20 border-orange-500/30 text-orange-300',
   'ME302': 'bg-lime-500/20 border-lime-500/30 text-lime-300',
+};
+
+const colorsList = [
+  'bg-cyan-500/20 border-cyan-500/30 text-cyan-300',
+  'bg-purple-500/20 border-purple-500/30 text-purple-300',
+  'bg-pink-500/20 border-pink-500/30 text-pink-300',
+  'bg-blue-500/20 border-blue-500/30 text-blue-300',
+  'bg-emerald-500/20 border-emerald-500/30 text-emerald-300',
+  'bg-amber-500/20 border-amber-500/30 text-amber-300',
+  'bg-rose-500/20 border-rose-500/30 text-rose-300',
+  'bg-teal-500/20 border-teal-500/30 text-teal-300',
+  'bg-indigo-500/20 border-indigo-500/30 text-indigo-300',
+  'bg-violet-500/20 border-violet-500/30 text-violet-300',
+  'bg-orange-500/20 border-orange-500/30 text-orange-300',
+  'bg-lime-500/20 border-lime-500/30 text-lime-300',
+];
+
+const getCourseColor = (courseCode) => {
+  if (courseColors[courseCode]) return courseColors[courseCode];
+  let hash = 0;
+  for (let i = 0; i < courseCode.length; i++) {
+    hash = courseCode.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colorsList.length;
+  return colorsList[index];
 };
 
 import { useAuthStore } from '../store/authStore';
@@ -71,9 +96,33 @@ export default function TimetablePage() {
     setSelectedUnavailable(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
   };
 
+  const timetableLookup = useMemo(() => {
+    if (!timetable?.entries) return {};
+    const map = {};
+    for (let i = 0; i < timetable.entries.length; i++) {
+      const e = timetable.entries[i];
+      map[`${e.day}-${e.timeSlot}`] = e;
+    }
+    return map;
+  }, [timetable]);
+
+  const uniqueCourses = useMemo(() => {
+    if (!timetable?.entries) return [];
+    const codes = new Set();
+    const list = [];
+    for (let i = 0; i < timetable.entries.length; i++) {
+      const e = timetable.entries[i];
+      if (!codes.has(e.courseCode)) {
+        codes.add(e.courseCode);
+        list.push(e.courseCode);
+      }
+    }
+    list.sort();
+    return list;
+  }, [timetable]);
+
   const getEntry = (day, slot) => {
-    if (!timetable?.entries) return null;
-    return timetable.entries.find(e => e.day === day && e.timeSlot === slot);
+    return timetableLookup[`${day}-${slot}`] || null;
   };
 
   const conflictPct = timetable?.conflictPercentage || 0;
@@ -202,7 +251,7 @@ export default function TimetablePage() {
                               initial={{ opacity: 0, scale: 0.9 }}
                               animate={{ opacity: 1, scale: 1 }}
                               transition={{ delay: (slotIdx * 6 + DAYS.indexOf(day)) * 0.01 }}
-                              className={`p-2 rounded-lg min-h-[70px] border transition-all duration-200 ${entry ? `${courseColors[entry.courseCode] || 'bg-white/5 border-white/10 text-white'} hover:scale-[1.02]` : 'bg-white/2 border-white/5'}`}
+                              className={`p-2 rounded-lg min-h-[70px] border transition-all duration-200 ${entry ? `${getCourseColor(entry.courseCode)} hover:scale-[1.02]` : 'bg-white/2 border-white/5'}`}
                             >
                               {entry && (
                                 <div className="text-xs">
@@ -248,7 +297,7 @@ export default function TimetablePage() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: slotIdx * 0.05 }}
-                        className={`flex items-stretch gap-4 p-4 rounded-xl border ${entry ? `${courseColors[entry.courseCode] || 'bg-white/5 border-white/10 text-white'} shadow-[0_4px_12px_rgba(0,0,0,0.15)]` : 'bg-white/2 border-white/5 opacity-55'}`}
+                        className={`flex items-stretch gap-4 p-4 rounded-xl border ${entry ? `${getCourseColor(entry.courseCode)} shadow-[0_4px_12px_rgba(0,0,0,0.15)]` : 'bg-white/2 border-white/5 opacity-55'}`}
                       >
                         <div className="w-20 shrink-0 flex flex-col justify-center border-r border-white/10 pr-3">
                           <span className="text-[10px] font-mono font-medium text-nexura-text-dim">Slot {slotIdx + 1}</span>
@@ -274,14 +323,16 @@ export default function TimetablePage() {
               </div>
 
               {/* Legend */}
-              <GlassCard hover={false} className="mt-6">
-                <h4 className="text-sm font-semibold text-nexura-text mb-3">Course Legend</h4>
-                <div className="flex flex-wrap gap-2">
-                  {Object.entries(courseColors).map(([code, cls]) => (
-                    <span key={code} className={`px-3 py-1 rounded-lg text-xs border ${cls}`}>{code}</span>
-                  ))}
-                </div>
-              </GlassCard>
+              {uniqueCourses.length > 0 && (
+                <GlassCard hover={false} className="mt-6">
+                  <h4 className="text-sm font-semibold text-nexura-text mb-3">Course Legend</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {uniqueCourses.map(code => (
+                      <span key={code} className={`px-3 py-1 rounded-lg text-xs border ${getCourseColor(code)}`}>{code}</span>
+                    ))}
+                  </div>
+                </GlassCard>
+              )}
             </motion.div>
           )}
 
