@@ -28,6 +28,9 @@ export const timetableAPI = {
   generate: (data = {}) => api.post('/timetable/generate', data),
   simulateChange: (unavailableFaculty) => api.post('/timetable/simulate-change', { unavailableFaculty }),
   getCurrent: () => api.get('/timetable/current'),
+  getHistory: () => api.get('/timetable/history'),
+  activate: (id) => api.post(`/timetable/${id}/active`),
+  delete: (id) => api.delete(`/timetable/${id}`),
 };
 
 export const studentAPI = {
