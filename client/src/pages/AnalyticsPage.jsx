@@ -34,7 +34,7 @@ export default function AnalyticsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <PageTransition><div className="min-h-screen pt-24"><LoadingSpinner text="Loading analytics..." /></div></PageTransition>;
+  if (loading) return <PageTransition><div className="min-h-screen pt-24"><LoadingSpinner color="pink" size="lg" variant="pulse" text="Analyzing academic metrics..." /></div></PageTransition>;
 
   const workloadData = analytics?.facultyWorkload?.map(f => ({
     name: f.name.split(' ').pop(),

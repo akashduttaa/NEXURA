@@ -45,7 +45,7 @@ export default function BlockchainPage() {
     setTimeout(() => setCopiedHash(null), 2000);
   };
 
-  if (loading) return <PageTransition><div className="min-h-screen pt-24"><LoadingSpinner text="Loading blockchain..." /></div></PageTransition>;
+  if (loading) return <PageTransition><div className="min-h-screen pt-24"><LoadingSpinner color="emerald" size="lg" variant="neon" text="Loading secure blockchain ledger..." /></div></PageTransition>;
 
   return (
     <PageTransition>
