@@ -51,6 +51,9 @@ export const transactionAPI = {
   getAll: () => api.get('/transactions'),
   create: (data) => api.post('/transactions', data),
   validate: () => api.get('/transactions/validate'),
+  tamper: (blockIndex, data) => api.post('/transactions/tamper', { blockIndex, data }),
+  repair: () => api.post('/transactions/repair'),
+  verifyStudent: (rollNo) => api.get(`/transactions/verify-student/${rollNo}`),
 };
 
 export const analyticsAPI = {

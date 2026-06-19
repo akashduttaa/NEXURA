@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, GraduationCap, BookOpen, Building2, DollarSign, Award, Clock, TrendingUp } from 'lucide-react';
+import { Users, GraduationCap, BookOpen, Building2, DollarSign, Award, Clock, TrendingUp, AlertTriangle } from 'lucide-react';
 import PageTransition from '../components/layout/PageTransition';
 import GlassCard from '../components/ui/GlassCard';
 import StatCard from '../components/ui/StatCard';
 import StatusBadge from '../components/ui/StatusBadge';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import { studentAPI, facultyAPI, analyticsAPI } from '../lib/api';
+import { studentAPI, facultyAPI, analyticsAPI, transactionAPI } from '../lib/api';
 
 import { useAuthStore } from '../store/authStore';
 
@@ -16,23 +16,39 @@ export default function DashboardPage() {
   const [analytics, setAnalytics] = useState(null);
   const [students, setStudents] = useState([]);
   const [faculty, setFaculty] = useState([]);
+  const [studentDetails, setStudentDetails] = useState(null);
+  const [blockchainVerify, setBlockchainVerify] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       setLoading(true);
       try {
-        const [aRes, sRes, fRes] = await Promise.all([
-          analyticsAPI.getAll(), studentAPI.getAll(), facultyAPI.getAll()
-        ]);
-        setAnalytics(aRes.data.data);
-        setStudents(sRes.data.data);
-        setFaculty(fRes.data.data);
+        if (role === 'Admin') {
+          const [aRes, sRes, fRes] = await Promise.all([
+            analyticsAPI.getAll(), studentAPI.getAll(), facultyAPI.getAll()
+          ]);
+          setAnalytics(aRes.data.data);
+          setStudents(sRes.data.data);
+          setFaculty(fRes.data.data);
+        } else if (role === 'Student') {
+          const sRes = await studentAPI.getByRoll(user.referenceId);
+          setStudentDetails(sRes.data.data);
+          try {
+            const vRes = await transactionAPI.verifyStudent(user.referenceId);
+            setBlockchainVerify(vRes.data);
+          } catch (e) {
+            console.error("Blockchain student verification failed:", e);
+          }
+        } else if (role === 'Faculty') {
+          const fRes = await facultyAPI.getAll();
+          setFaculty(fRes.data.data);
+        }
       } catch (e) { console.error(e); }
       setLoading(false);
     };
     load();
-  }, []);
+  }, [role, user?.referenceId]);
 
   if (loading) return <PageTransition><div className="min-h-screen pt-24"><LoadingSpinner color="cyan" size="lg" variant="neon" text="Loading dashboard data..." /></div></PageTransition>;
 
@@ -142,31 +158,77 @@ export default function DashboardPage() {
 
             {role === 'Student' && (
               <motion.div key="student" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                {/* Blockchain Anomaly / Mismatch Warning */}
+                {blockchainVerify && blockchainVerify.status !== 'secured' && (
+                  <div className={`mb-6 p-5 rounded-2xl glass border ${
+                    blockchainVerify.status === 'ledger_compromised' ? 'border-red-500/30 bg-red-500/5 hover:glow-red animate-pulse text-red-400' : 'border-amber-500/30 bg-amber-500/5 hover:glow-amber text-amber-400'
+                  }`}>
+                    <h3 className="text-md font-bold flex items-center gap-2">
+                      <AlertTriangle className="w-5 h-5 animate-bounce" /> Academic Record Integrity Warning
+                    </h3>
+                    <p className="text-xs text-nexura-text-dim mt-2">
+                      The autonomous ledger validation engine has detected database anomalies or transaction tampering for this student profile.
+                    </p>
+                    <div className="mt-3 bg-black/30 p-3 rounded-lg border border-white/5 space-y-1">
+                      {blockchainVerify.discrepancies?.map((disc, idx) => (
+                        <div key={idx} className="text-xs font-mono text-amber-300">❌ {disc}</div>
+                      ))}
+                      {!blockchainVerify.chainValid && (
+                        <div className="text-xs font-mono text-red-400 font-bold">⚠️ CRITICAL: The overall blockchain ledger validation failed. Restoring from verified backup is required.</div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <GlassCard hover={false} className="mb-6">
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center text-2xl font-bold">A</div>
-                    <div>
-                      <h2 className="text-xl font-bold text-nexura-text">Aarav Patel</h2>
-                      <p className="text-nexura-text-dim text-sm">CSE2024001 · CSE · Semester 3</p>
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center text-2xl font-bold font-display">
+                      {(studentDetails?.name || user?.name)?.[0]}
                     </div>
-                    <StatusBadge status="verified" label="Active" className="ml-auto" />
+                    <div>
+                      <h2 className="text-xl font-bold text-nexura-text">{studentDetails?.name || user?.name}</h2>
+                      <p className="text-nexura-text-dim text-sm">
+                        {studentDetails?.rollNo || user?.referenceId} · {studentDetails?.department || 'N/A'} · Semester {studentDetails?.semester || 1}
+                      </p>
+                    </div>
+                    
+                    <div className="ml-auto flex items-center gap-2">
+                      {blockchainVerify && (
+                        <div>
+                          {blockchainVerify.status === 'secured' && (
+                            <StatusBadge status="verified" label="✓ Ledger Secured" className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)]" />
+                          )}
+                          {blockchainVerify.status === 'integrity_mismatch' && (
+                            <StatusBadge status="warning" label="⚠️ State Mismatch" className="bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.15)]" />
+                          )}
+                          {blockchainVerify.status === 'ledger_compromised' && (
+                            <StatusBadge status="error" label="🚨 Ledger Tampered" className="bg-red-500/10 text-red-400 border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.15)] animate-pulse" />
+                          )}
+                        </div>
+                      )}
+                      <StatusBadge status="verified" label="Active" />
+                    </div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <StatCard label="CGPA" value={8.7} icon={Award} color="cyan" />
-                    <StatCard label="Courses" value={4} icon={BookOpen} color="purple" delay={0.1} />
-                    <StatCard label="Semester" value={3} icon={Clock} color="pink" delay={0.2} />
-                    <StatCard label="Fee Status" value="Paid" icon={DollarSign} color="emerald" delay={0.3} />
+                    <StatCard label="CGPA" value={studentDetails?.cgpa || 0} icon={Award} color="cyan" />
+                    <StatCard label="Courses" value={studentDetails?.courses?.length || 0} icon={BookOpen} color="purple" delay={0.1} />
+                    <StatCard label="Semester" value={studentDetails?.semester || 1} icon={Clock} color="pink" delay={0.2} />
+                    <StatCard label="Fee Status" value={studentDetails?.feesPaid ? 'Paid' : 'Unpaid'} icon={DollarSign} color="emerald" delay={0.3} />
                   </div>
                 </GlassCard>
                 <GlassCard hover={false}>
                   <h3 className="text-lg font-semibold mb-4">Enrolled Courses</h3>
                   <div className="grid sm:grid-cols-2 gap-3">
-                    {['Data Structures & Algorithms', 'Operating Systems', 'Database Management Systems', 'Web Technologies Lab'].map((c, i) => (
-                      <div key={i} className="p-4 rounded-lg bg-white/3 border border-white/5 hover:border-nexura-cyan/20 transition-colors">
-                        <div className="text-nexura-text font-medium text-sm">{c}</div>
-                        <div className="text-xs text-nexura-text-muted mt-1">CS30{i + 1} · {i === 3 ? 2 : i + 3} Credits</div>
-                      </div>
-                    ))}
+                    {studentDetails?.courses && studentDetails.courses.length > 0 ? (
+                      studentDetails.courses.map((cCode, i) => (
+                        <div key={i} className="p-4 rounded-lg bg-white/3 border border-white/5 hover:border-nexura-cyan/20 transition-colors">
+                          <div className="text-nexura-text font-medium text-sm">{cCode}</div>
+                          <div className="text-xs text-nexura-text-muted mt-1">Core Departmental Course</div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-nexura-text-muted">No courses assigned.</p>
+                    )}
                   </div>
                 </GlassCard>
               </motion.div>
