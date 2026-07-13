@@ -1,6 +1,6 @@
 # NEXURA — AI + Blockchain Autonomous Academic Operating System
 
-A visually stunning, full-stack web platform for academic scheduling and student lifecycle management, powered by AI optimization and blockchain-backed data integrity for better performance and efficiency .
+A visually stunning, full-stack web platform for academic scheduling and student lifecycle management, powered by AI optimization and blockchain-backed data integrity for better performance and better efficiency .
 
 ![Tech Stack](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)
 ![Tech Stack](https://img.shields.io/badge/Vite-6-646CFF?style=flat-square&logo=vite)
