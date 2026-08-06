@@ -19,6 +19,7 @@ const scheduleSchema = new mongoose.Schema({
   conflicts: { type: Number, default: 0 },
   conflictDetails: [{ type: String }],
   fitness: { type: Number, default: 0 },
+  isActive: { type: Boolean, default: false },
   generatedAt: { type: Date, default: Date.now }
 });
 
