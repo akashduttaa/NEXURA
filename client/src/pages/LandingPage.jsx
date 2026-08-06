@@ -81,9 +81,15 @@ export default function LandingPage() {
               <NeonButton onClick={() => navigate('/dashboard')} size="lg" icon={Zap}>
                 Launch Dashboard
               </NeonButton>
-              <NeonButton onClick={() => navigate('/timetable')} variant="ghost" size="lg" icon={ChevronRight}>
-                Generate Timetable
-              </NeonButton>
+              <NeonButton 
+              onClick={() => navigate('/timetable')} 
+              variant="ghost" 
+              size="lg" 
+              icon={ChevronRight}
+              className="!text-nexura-text !border-nexura-border hover:bg-nexura-surface transition-all duration-300"
+              >
+  Generate Timetable
+</NeonButton>
             </motion.div>
 
             {/* Stats bar */}

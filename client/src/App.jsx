@@ -14,7 +14,10 @@ import AnalyticsPage from './pages/AnalyticsPage';
 export default function App() {
   return (
     <Router>
-      <div className="relative min-h-screen">
+      {/* We added bg-nexura-bg and text-nexura-text along with transition utility classes. 
+        This links your container colors to the active light/dark values we set up in index.css!
+      */}
+      <div className="relative min-h-screen bg-nexura-bg text-nexura-text transition-colors duration-300">
         <ParticleField />
         <Navbar />
         <AnimatePresence mode="wait">
