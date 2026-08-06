@@ -14,9 +14,11 @@ import AnalyticsPage from './pages/AnalyticsPage';
 export default function App() {
   return (
     <Router>
-      <div className="relative min-h-screen">
+      {/* Just the dark mode classes added here! */}
+      <div className="relative min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-300">
         <ParticleField />
         <Navbar />
+        
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<LandingPage />} />
