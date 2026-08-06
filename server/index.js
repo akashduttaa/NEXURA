@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import blockchain from './services/blockchainSimulator.js';
 import { studentData, facultyData, courseData, roomData } from './seed/seedData.js';
+import errorHandler from './middleware/errorHandler.js';
 
 import authRoutes from './routes/auth.js';
 import timetableRoutes from './routes/timetable.js';
@@ -29,25 +30,33 @@ app.use('/api/faculty', facultyRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/analytics', analyticsRoutes);
 
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found` });
+});
+
+// Global error handler
+app.use(errorHandler);
+
 import Course from './models/Course.js';
 import Room from './models/Room.js';
 
 // Courses & Rooms endpoints
-app.get('/api/courses', async (req, res) => {
+app.get('/api/courses', async (req, res, next) => {
   try {
     const courses = await Course.find().lean();
     res.json({ success: true, data: courses });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    next(error);
   }
 });
 
-app.get('/api/rooms', async (req, res) => {
+app.get('/api/rooms', async (req, res, next) => {
   try {
     const rooms = await Room.find().lean();
     res.json({ success: true, data: rooms });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    next(error);
   }
 });
 

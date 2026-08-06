@@ -10,7 +10,7 @@ const router = Router();
 let cachedTimetable = null;
 
 // Only admin can generate
-router.post('/generate', auth, authorize('admin'), async (req, res) => {
+router.post('/generate', auth, authorize('admin'), async (req, res, next) => {
   try {
     const { department, semester } = req.body;
     
@@ -23,12 +23,12 @@ router.post('/generate', auth, authorize('admin'), async (req, res) => {
     
     res.json({ success: true, data: result });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    next(error);
   }
 });
 
 // Only admin can simulate changes
-router.post('/simulate-change', auth, authorize('admin'), async (req, res) => {
+router.post('/simulate-change', auth, authorize('admin'), async (req, res, next) => {
   try {
     const { unavailableFaculty = [] } = req.body;
     
@@ -41,11 +41,11 @@ router.post('/simulate-change', auth, authorize('admin'), async (req, res) => {
     
     res.json({ success: true, data: result, simulatedChange: { unavailableFaculty } });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    next(error);
   }
 });
 
-router.get('/current', (req, res) => {
+router.get('/current', (req, res, next) => {
   if (cachedTimetable) {
     res.json({ success: true, data: cachedTimetable });
   } else {
