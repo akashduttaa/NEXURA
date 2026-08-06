@@ -11,6 +11,8 @@ import studentRoutes from './routes/students.js';
 import facultyRoutes from './routes/faculty.js';
 import transactionRoutes from './routes/transactions.js';
 import analyticsRoutes from './routes/analytics.js';
+import { globalErrorHandler } from './middleware/errorHandler.js'; 
+import { catchAsync } from './utils/catchAsync.js';
 
 dotenv.config();
 
@@ -55,6 +57,7 @@ app.get('/api/rooms', async (req, res) => {
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), blockchain: blockchain.getStats() });
 });
+app.use(globalErrorHandler);
 
 // Seed blockchain with sample transactions
 function seedBlockchain() {
