@@ -72,7 +72,7 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {[
               { label: 'Avg Faculty Load', value: `${avgUtilization}%`, icon: TrendingUp, color: 'text-cyan-400' },
               { label: 'Rooms Available', value: roomData.length, icon: PieIcon, color: 'text-purple-400' },

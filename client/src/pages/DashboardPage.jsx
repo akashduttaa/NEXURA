@@ -52,7 +52,7 @@ export default function DashboardPage() {
             {role === 'Admin' && (
               <motion.div key="admin" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                 {/* Stats Grid */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                   <StatCard label="Total Students" value={overview.totalStudents || 20} icon={GraduationCap} color="cyan" delay={0} />
                   <StatCard label="Total Faculty" value={overview.totalFaculty || 8} icon={Users} color="purple" delay={0.1} />
                   <StatCard label="Courses" value={overview.totalCourses || 12} icon={BookOpen} color="pink" delay={0.2} />
@@ -151,7 +151,7 @@ export default function DashboardPage() {
                     </div>
                     <StatusBadge status="verified" label="Active" className="ml-auto" />
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <StatCard label="CGPA" value={8.7} icon={Award} color="cyan" />
                     <StatCard label="Courses" value={4} icon={BookOpen} color="purple" delay={0.1} />
                     <StatCard label="Semester" value={3} icon={Clock} color="pink" delay={0.2} />
@@ -182,7 +182,7 @@ export default function DashboardPage() {
                       <p className="text-nexura-text-dim text-sm">FAC001 · CSE Department</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <StatCard label="Courses Assigned" value={2} icon={BookOpen} color="purple" />
                     <StatCard label="Hours/Week" value={8} icon={Clock} color="cyan" delay={0.1} />
                     <StatCard label="Workload" value={44} suffix="%" icon={TrendingUp} color="emerald" delay={0.2} />
