@@ -45,7 +45,7 @@ export default function BlockchainPage() {
     setTimeout(() => setCopiedHash(null), 2000);
   };
 
-  if (loading) return <PageTransition><div className="min-h-screen pt-24"><LoadingSpinner text="Loading blockchain..." /></div></PageTransition>;
+  if (loading) return <PageTransition><div className="min-h-screen pt-24"><LoadingSpinner color="emerald" size="lg" variant="neon" text="Loading secure blockchain ledger..." /></div></PageTransition>;
 
   return (
     <PageTransition>
@@ -64,7 +64,7 @@ export default function BlockchainPage() {
 
           {/* Chain Stats */}
           {stats && (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               <GlassCard delay={0}>
                 <div className="text-sm text-nexura-text-dim mb-1">Total Blocks</div>
                 <div className="text-3xl font-bold text-nexura-cyan font-display">{stats.totalBlocks}</div>
@@ -128,38 +128,40 @@ export default function BlockchainPage() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.03 }}
-                      className="flex items-start gap-4 p-4 rounded-xl bg-white/3 border border-white/5 hover:border-nexura-cyan/20 transition-all group"
+                      className="flex flex-col sm:flex-row items-stretch sm:items-start gap-3 sm:gap-4 p-4 rounded-xl bg-white/3 border border-white/5 hover:border-nexura-cyan/20 transition-all group"
                     >
-                      <div className={`w-10 h-10 shrink-0 rounded-lg bg-white/5 flex items-center justify-center ${color}`}>
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-sm font-medium text-nexura-text capitalize">{tx.data?.type?.replace(/_/g, ' ')}</span>
-                          <StatusBadge status="verified" label="Verified on Blockchain" />
+                      <div className="flex items-start gap-4 flex-1 min-w-0">
+                        <div className={`w-10 h-10 shrink-0 rounded-lg bg-white/5 flex items-center justify-center ${color}`}>
+                          <Icon className="w-5 h-5" />
                         </div>
-                        {tx.data?.studentName && (
-                          <div className="text-sm text-nexura-text-dim">{tx.data.studentName} ({tx.data.studentRollNo})</div>
-                        )}
-                        {tx.data?.details && tx.data.type !== 'genesis' && (
-                          <div className="text-xs text-nexura-text-muted mt-1">
-                            {tx.data.details.course && `Course: ${tx.data.details.course}`}
-                            {tx.data.details.grade && ` · Grade: ${tx.data.details.grade}`}
-                            {tx.data.details.amount && `Amount: ₹${tx.data.details.amount?.toLocaleString()}`}
-                            {tx.data.details.certificateType && tx.data.details.certificateType}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
+                            <span className="text-sm font-medium text-nexura-text capitalize">{tx.data?.type?.replace(/_/g, ' ')}</span>
+                            <StatusBadge status="verified" label="Verified" />
                           </div>
-                        )}
-                        <div className="flex items-center gap-2 mt-2">
-                          <Hash className="w-3 h-3 text-nexura-text-muted" />
-                          <span className="text-xs font-mono text-nexura-text-muted truncate">{tx.hash}</span>
-                          <button onClick={() => copyHash(tx.hash)} className="opacity-0 group-hover:opacity-100 transition-opacity">
-                            {copiedHash === tx.hash ? <CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-nexura-text-muted hover:text-nexura-text" />}
-                          </button>
+                          {tx.data?.studentName && (
+                            <div className="text-sm text-nexura-text-dim">{tx.data.studentName} ({tx.data.studentRollNo})</div>
+                          )}
+                          {tx.data?.details && tx.data.type !== 'genesis' && (
+                            <div className="text-xs text-nexura-text-muted mt-1">
+                              {tx.data.details.course && `Course: ${tx.data.details.course}`}
+                              {tx.data.details.grade && ` · Grade: ${tx.data.details.grade}`}
+                              {tx.data.details.amount && `Amount: ₹${tx.data.details.amount?.toLocaleString()}`}
+                              {tx.data.details.certificateType && tx.data.details.certificateType}
+                            </div>
+                          )}
+                          <div className="flex items-center gap-2 mt-2">
+                            <Hash className="w-3 h-3 text-nexura-text-muted" />
+                            <span className="text-xs font-mono text-nexura-text-muted truncate">{tx.hash}</span>
+                            <button onClick={() => copyHash(tx.hash)} className="opacity-0 group-hover:opacity-100 transition-opacity">
+                              {copiedHash === tx.hash ? <CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-nexura-text-muted hover:text-nexura-text" />}
+                            </button>
+                          </div>
                         </div>
                       </div>
-                      <div className="text-right shrink-0">
+                      <div className="flex sm:flex-col justify-between sm:justify-start items-center sm:items-end gap-1 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-white/5">
                         <div className="text-xs text-nexura-text-muted">Block #{tx.blockIndex}</div>
-                        <div className="text-xs text-nexura-text-muted mt-1">{new Date(tx.timestamp).toLocaleTimeString()}</div>
+                        <div className="text-xs text-nexura-text-muted">{new Date(tx.timestamp).toLocaleTimeString()}</div>
                       </div>
                     </motion.div>
                   );

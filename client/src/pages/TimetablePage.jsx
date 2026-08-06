@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Zap, AlertTriangle, CheckCircle, RefreshCw, UserX, Sparkles } from 'lucide-react';
 import PageTransition from '../components/layout/PageTransition';
@@ -25,6 +25,31 @@ const courseColors = {
   'ME302': 'bg-lime-500/20 border-lime-500/30 text-lime-300',
 };
 
+const colorsList = [
+  'bg-cyan-500/20 border-cyan-500/30 text-cyan-300',
+  'bg-purple-500/20 border-purple-500/30 text-purple-300',
+  'bg-pink-500/20 border-pink-500/30 text-pink-300',
+  'bg-blue-500/20 border-blue-500/30 text-blue-300',
+  'bg-emerald-500/20 border-emerald-500/30 text-emerald-300',
+  'bg-amber-500/20 border-amber-500/30 text-amber-300',
+  'bg-rose-500/20 border-rose-500/30 text-rose-300',
+  'bg-teal-500/20 border-teal-500/30 text-teal-300',
+  'bg-indigo-500/20 border-indigo-500/30 text-indigo-300',
+  'bg-violet-500/20 border-violet-500/30 text-violet-300',
+  'bg-orange-500/20 border-orange-500/30 text-orange-300',
+  'bg-lime-500/20 border-lime-500/30 text-lime-300',
+];
+
+const getCourseColor = (courseCode) => {
+  if (courseColors[courseCode]) return courseColors[courseCode];
+  let hash = 0;
+  for (let i = 0; i < courseCode.length; i++) {
+    hash = courseCode.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colorsList.length;
+  return colorsList[index];
+};
+
 import { useAuthStore } from '../store/authStore';
 
 export default function TimetablePage() {
@@ -36,6 +61,7 @@ export default function TimetablePage() {
   const [simulating, setSimulating] = useState(false);
   const [selectedUnavailable, setSelectedUnavailable] = useState([]);
   const [showSimPanel, setShowSimPanel] = useState(false);
+  const [mobileActiveDay, setMobileActiveDay] = useState(DAYS[0]);
 
   useEffect(() => {
     facultyAPI.getAll().then(r => setFaculty(r.data.data)).catch(() => {});
@@ -70,9 +96,33 @@ export default function TimetablePage() {
     setSelectedUnavailable(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
   };
 
+  const timetableLookup = useMemo(() => {
+    if (!timetable?.entries) return {};
+    const map = {};
+    for (let i = 0; i < timetable.entries.length; i++) {
+      const e = timetable.entries[i];
+      map[`${e.day}-${e.timeSlot}`] = e;
+    }
+    return map;
+  }, [timetable]);
+
+  const uniqueCourses = useMemo(() => {
+    if (!timetable?.entries) return [];
+    const codes = new Set();
+    const list = [];
+    for (let i = 0; i < timetable.entries.length; i++) {
+      const e = timetable.entries[i];
+      if (!codes.has(e.courseCode)) {
+        codes.add(e.courseCode);
+        list.push(e.courseCode);
+      }
+    }
+    list.sort();
+    return list;
+  }, [timetable]);
+
   const getEntry = (day, slot) => {
-    if (!timetable?.entries) return null;
-    return timetable.entries.find(e => e.day === day && e.timeSlot === slot);
+    return timetableLookup[`${day}-${slot}`] || null;
   };
 
   const conflictPct = timetable?.conflictPercentage || 0;
@@ -132,7 +182,7 @@ export default function TimetablePage() {
             )}
           </AnimatePresence>
 
-          {loading && <LoadingSpinner text="Running Genetic Algorithm... Evolving 300 generations" />}
+          {loading && <LoadingSpinner color="purple" size="lg" variant="dual" text="Running Genetic Algorithm... Evolving 300 generations" />}
 
           {/* Timetable Grid */}
           {timetable && !loading && (
@@ -175,8 +225,8 @@ export default function TimetablePage() {
                 )}
               </GlassCard>
 
-              {/* Grid */}
-              <div className="overflow-x-auto">
+              {/* Desktop Grid View */}
+              <div className="hidden md:block overflow-x-auto">
                 <div className="min-w-[900px]">
                   <div className="grid grid-cols-[100px_repeat(6,1fr)] gap-1">
                     {/* Header */}
@@ -189,7 +239,7 @@ export default function TimetablePage() {
 
                     {/* Time slots */}
                     {TIME_LABELS.map((label, slotIdx) => (
-                      <>
+                      <div key={`slot-row-${slotIdx}`} className="contents">
                         <div key={`label-${slotIdx}`} className="p-2 text-xs text-nexura-text-muted flex items-center justify-center">
                           {label}
                         </div>
@@ -201,7 +251,7 @@ export default function TimetablePage() {
                               initial={{ opacity: 0, scale: 0.9 }}
                               animate={{ opacity: 1, scale: 1 }}
                               transition={{ delay: (slotIdx * 6 + DAYS.indexOf(day)) * 0.01 }}
-                              className={`p-2 rounded-lg min-h-[70px] border transition-all duration-200 ${entry ? `${courseColors[entry.courseCode] || 'bg-white/5 border-white/10 text-white'} hover:scale-[1.02]` : 'bg-white/2 border-white/5'}`}
+                              className={`p-2 rounded-lg min-h-[70px] border transition-all duration-200 ${entry ? `${getCourseColor(entry.courseCode)} hover:scale-[1.02]` : 'bg-white/2 border-white/5'}`}
                             >
                               {entry && (
                                 <div className="text-xs">
@@ -213,21 +263,76 @@ export default function TimetablePage() {
                             </motion.div>
                           );
                         })}
-                      </>
+                      </div>
                     ))}
                   </div>
                 </div>
               </div>
 
-              {/* Legend */}
-              <GlassCard hover={false} className="mt-6">
-                <h4 className="text-sm font-semibold text-nexura-text mb-3">Course Legend</h4>
-                <div className="flex flex-wrap gap-2">
-                  {Object.entries(courseColors).map(([code, cls]) => (
-                    <span key={code} className={`px-3 py-1 rounded-lg text-xs border ${cls}`}>{code}</span>
-                  ))}
+              {/* Mobile Timeline View */}
+              <div className="block md:hidden">
+                {/* Mobile Day Selector Tabs */}
+                <div className="flex gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
+                  {DAYS.map(day => {
+                    const active = mobileActiveDay === day;
+                    return (
+                      <button
+                        key={day}
+                        onClick={() => setMobileActiveDay(day)}
+                        className={`px-4 py-2.5 rounded-xl text-xs font-semibold font-display tracking-wider transition-all shrink-0 ${active ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-nexura-cyan/50 text-nexura-cyan shadow-[0_0_15px_rgba(0,240,255,0.15)]' : 'bg-white/5 border border-white/5 text-nexura-text-dim hover:text-nexura-text'}`}
+                      >
+                        {day.toUpperCase()}
+                      </button>
+                    );
+                  })}
                 </div>
-              </GlassCard>
+
+                {/* Mobile Day List */}
+                <div className="space-y-3">
+                  {TIME_LABELS.map((label, slotIdx) => {
+                    const entry = getEntry(mobileActiveDay, slotIdx + 1);
+                    return (
+                      <motion.div
+                        key={`${mobileActiveDay}-${slotIdx}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: slotIdx * 0.05 }}
+                        className={`flex items-stretch gap-4 p-4 rounded-xl border ${entry ? `${getCourseColor(entry.courseCode)} shadow-[0_4px_12px_rgba(0,0,0,0.15)]` : 'bg-white/2 border-white/5 opacity-55'}`}
+                      >
+                        <div className="w-20 shrink-0 flex flex-col justify-center border-r border-white/10 pr-3">
+                          <span className="text-[10px] font-mono font-medium text-nexura-text-dim">Slot {slotIdx + 1}</span>
+                          <span className="text-xs font-bold font-display mt-0.5 text-nexura-cyan">{label}</span>
+                        </div>
+                        <div className="flex-1 min-w-0 flex flex-col justify-center">
+                          {entry ? (
+                            <>
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="font-bold text-sm tracking-wide text-white">{entry.courseCode}</span>
+                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-nexura-text-dim">{entry.roomNumber}</span>
+                              </div>
+                              <div className="text-xs font-semibold truncate mt-1 text-nexura-text-dim">{entry.courseName}</div>
+                            </>
+                          ) : (
+                            <span className="text-xs text-nexura-text-muted italic">No Scheduled Class</span>
+                          )}
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Legend */}
+              {uniqueCourses.length > 0 && (
+                <GlassCard hover={false} className="mt-6">
+                  <h4 className="text-sm font-semibold text-nexura-text mb-3">Course Legend</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {uniqueCourses.map(code => (
+                      <span key={code} className={`px-3 py-1 rounded-lg text-xs border ${getCourseColor(code)}`}>{code}</span>
+                    ))}
+                  </div>
+                </GlassCard>
+              )}
             </motion.div>
           )}
 
