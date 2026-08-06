@@ -48,7 +48,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.8 }}
-              className="text-5xl sm:text-7xl lg:text-8xl font-display font-black mb-6 leading-tight"
+              className="text-6xl sm:text-7xl lg:text-8xl font-display font-black mb-6 leading-tight tracking-tighter"
             >
               <span className="gradient-text">NEXURA</span>
             </motion.h1>
@@ -76,12 +76,12 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4"
+              className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 px-6 sm:px-0"
             >
-              <NeonButton onClick={() => navigate('/dashboard')} size="lg" icon={Zap}>
+              <NeonButton onClick={() => navigate('/dashboard')} size="lg" icon={Zap} className="w-full sm:w-auto">
                 Launch Dashboard
               </NeonButton>
-              <NeonButton onClick={() => navigate('/timetable')} variant="ghost" size="lg" icon={ChevronRight}>
+              <NeonButton onClick={() => navigate('/timetable')} variant="ghost" size="lg" icon={ChevronRight} className="w-full sm:w-auto">
                 Generate Timetable
               </NeonButton>
             </motion.div>
@@ -91,12 +91,12 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.2 }}
-              className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto"
+              className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-4 max-w-2xl mx-auto px-4"
             >
               {stats.map((stat, i) => (
-                <div key={i} className="text-center">
-                  <div className="text-2xl font-bold text-nexura-cyan font-display">{stat.value}</div>
-                  <div className="text-xs text-nexura-text-muted mt-1">{stat.label}</div>
+                <div key={i} className="text-center group">
+                  <div className="text-xl sm:text-2xl font-bold text-nexura-cyan font-display group-hover:text-glow-cyan transition-all">{stat.value}</div>
+                  <div className="text-[10px] sm:text-xs text-nexura-text-muted mt-1 uppercase tracking-wider">{stat.label}</div>
                 </div>
               ))}
             </motion.div>

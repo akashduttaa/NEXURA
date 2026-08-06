@@ -43,16 +43,16 @@ export default function DashboardPage() {
       <div className="min-h-screen pt-20 pb-12 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-display font-bold gradient-text mb-2">{role} Dashboard</h1>
-            <p className="text-nexura-text-dim">Welcome to the NEXURA control center, {user?.name}</p>
+          <div className="mb-8 px-2 sm:px-0">
+            <h1 className="text-2xl sm:text-3xl font-display font-bold gradient-text mb-2">{role} Dashboard</h1>
+            <p className="text-sm sm:text-base text-nexura-text-dim">Welcome to the NEXURA control center, {user?.name}</p>
           </div>
 
           <AnimatePresence mode="wait">
             {role === 'Admin' && (
               <motion.div key="admin" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                 {/* Stats Grid */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                   <StatCard label="Total Students" value={overview.totalStudents || 20} icon={GraduationCap} color="cyan" delay={0} />
                   <StatCard label="Total Faculty" value={overview.totalFaculty || 8} icon={Users} color="purple" delay={0.1} />
                   <StatCard label="Courses" value={overview.totalCourses || 12} icon={BookOpen} color="pink" delay={0.2} />

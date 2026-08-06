@@ -18,6 +18,8 @@
 
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-display: 'Orbitron', monospace;
+
+  --breakpoint-xs: 375px;
 }
 
 

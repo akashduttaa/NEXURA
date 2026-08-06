@@ -82,17 +82,17 @@ export default function TimetablePage() {
       <div className="min-h-screen pt-20 pb-12 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8 px-2 sm:px-0">
             <div>
-              <h1 className="text-3xl font-display font-bold gradient-text mb-2">AI Timetable Generator</h1>
-              <p className="text-nexura-text-dim">Genetic Algorithm with 300 generations × 60 population size</p>
+              <h1 className="text-2xl sm:text-3xl font-display font-bold gradient-text mb-2">AI Timetable Generator</h1>
+              <p className="text-sm sm:text-base text-nexura-text-dim">Genetic Algorithm with 300 generations × 60 population size</p>
             </div>
             {isAdmin && (
-              <div className="flex gap-3">
-                <NeonButton onClick={handleGenerate} loading={loading} icon={Sparkles}>
+              <div className="flex flex-col xs:flex-row gap-3 w-full md:w-auto">
+                <NeonButton onClick={handleGenerate} loading={loading} icon={Sparkles} className="w-full xs:w-auto">
                   Generate Timetable
                 </NeonButton>
-                <NeonButton onClick={() => setShowSimPanel(!showSimPanel)} variant="ghost" icon={RefreshCw}>
+                <NeonButton onClick={() => setShowSimPanel(!showSimPanel)} variant="ghost" icon={RefreshCw} className="w-full xs:w-auto">
                   Simulate Change
                 </NeonButton>
               </div>

@@ -103,7 +103,7 @@ export default function SignupPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-nexura-text-dim mb-1.5">Role</label>
                       <select name="role" value={formData.role} onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-nexura-text focus:outline-none focus:border-nexura-cyan/50 focus:ring-1 focus:ring-nexura-cyan/50 transition-all appearance-none cursor-pointer">
