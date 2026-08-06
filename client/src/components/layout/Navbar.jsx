@@ -109,6 +109,7 @@ export default function Navbar() {
           >
             <div className="px-4 py-3 space-y-1">
               {navItems.map(({ path, label, icon: Icon }) => {
+                if (!isAuthenticated && path !== '/' && path !== '/blockchain') return null;
                 const active = location.pathname === path;
                 return (
                   <Link
@@ -122,6 +123,38 @@ export default function Navbar() {
                   </Link>
                 );
               })}
+
+              <div className="h-px bg-white/10 my-2" />
+
+              {isAuthenticated ? (
+                <div className="space-y-1">
+                  <div className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-nexura-cyan">
+                    <User className="w-4 h-4" />
+                    <span className="truncate">{user?.name}</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-nexura-cyan/10 uppercase font-semibold border border-nexura-cyan/20 ml-auto">{user?.role}</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setMobileOpen(false);
+                      logout();
+                      navigate('/');
+                    }}
+                    className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-colors"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all hover:border-nexura-cyan/50"
+                >
+                  <LogIn className="w-5 h-5" />
+                  Sign In
+                </Link>
+              )}
             </div>
           </motion.div>
         )}

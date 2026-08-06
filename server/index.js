@@ -57,20 +57,27 @@ app.get('/api/health', (req, res) => {
 });
 
 // Seed blockchain with sample transactions
-function seedBlockchain() {
-  blockchain.addAcademicRecord('Aarav Patel', 'CSE2024001', { course: 'CS301', grade: 'A', semester: 3, gpa: 9.0 });
-  blockchain.addAcademicRecord('Diya Sharma', 'CSE2024002', { course: 'CS302', grade: 'A+', semester: 3, gpa: 9.5 });
-  blockchain.addFeePayment('Aarav Patel', 'CSE2024001', 125000, 3);
-  blockchain.addFeePayment('Saanvi Mehta', 'ECE2024001', 115000, 3);
-  blockchain.addCertificate('Ishita Reddy', 'CSE2024006', 'Merit Certificate - Dean\'s List');
-  blockchain.addAcademicRecord('Vihaan Singh', 'CSE2024003', { course: 'CS305', grade: 'B+', semester: 5, gpa: 8.2 });
-  blockchain.addFeePayment('Vivaan Rao', 'ME2024001', 110000, 3);
+async function seedBlockchain() {
+  const stats = blockchain.getStats();
+  if (stats.totalBlocks <= 1) {
+    console.log('🌱 Seeding blockchain with sample records...');
+    await blockchain.addAcademicRecord('Aarav Patel', 'CSE2024001', { course: 'CS301', grade: 'A', semester: 3, gpa: 9.0 });
+    await blockchain.addAcademicRecord('Diya Sharma', 'CSE2024002', { course: 'CS302', grade: 'A+', semester: 3, gpa: 9.5 });
+    await blockchain.addFeePayment('Aarav Patel', 'CSE2024001', 125000, 3);
+    await blockchain.addFeePayment('Saanvi Mehta', 'ECE2024001', 115000, 3);
+    await blockchain.addCertificate('Ishita Reddy', 'CSE2024006', 'Merit Certificate - Dean\'s List');
+    await blockchain.addAcademicRecord('Vihaan Singh', 'CSE2024003', { course: 'CS305', grade: 'B+', semester: 5, gpa: 8.2 });
+    await blockchain.addFeePayment('Vivaan Rao', 'ME2024001', 110000, 3);
+  } else {
+    console.log('⛓️  Blockchain already contains transactions. Skipping seed.');
+  }
 }
 
 // Start server
 const start = async () => {
   await connectDB();
-  seedBlockchain();
+  await blockchain.init();
+  await seedBlockchain();
   
   app.listen(PORT, () => {
     console.log(`\n🚀 NEXURA Server running on http://localhost:${PORT}`);
