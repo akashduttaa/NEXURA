@@ -105,7 +105,136 @@ NEXURA/
 **AI:** Custom Genetic Algorithm (population 60, 300 generations, tournament selection, uniform crossover, adaptive mutation)
 
 **Blockchain:** Simulated SHA-256 hash chain with proof-of-work (difficulty 2)
+## 🚀 Quick Start
 
+### 📋 Prerequisites
+
+Before running the project, make sure these are installed:
+
+* Node.js (v18 or higher)
+* npm
+* MongoDB (Optional - the application can run with in-memory demo data if MongoDB is unavailable)
+
+Verify installation:
+
+```bash
+node -v
+npm -v
+```
+
+---
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone https://github.com/<your-username>/NEXURA.git
+cd NEXURA
+```
+
+---
+
+### 2️⃣ Install Backend Dependencies
+
+Open a terminal and run:
+
+```bash
+cd server
+npm install
+```
+
+---
+
+### 3️⃣ Install Frontend Dependencies
+
+Open a new terminal and run:
+
+```bash
+cd client
+npm install
+```
+
+---
+
+### 4️⃣ Create Environment Variable Files
+
+Create these files:
+
+```text
+server/.env
+client/.env
+```
+
+---
+
+### 5️⃣ Add the Following to `server/.env`
+
+```env
+PORT=5000
+
+MONGODB_URI=mongodb://localhost:27017/nexura
+
+JWT_SECRET=nexura_super_secret_key_2026
+
+EMAIL_USER=your_email@gmail.com
+
+EMAIL_PASS=your_email_app_password
+```
+
+---
+
+### 6️⃣ Add the Following to `client/.env`
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+---
+
+### 7️⃣ Start the Backend
+
+Inside the `server` folder:
+
+```bash
+npm run dev
+```
+
+Backend will run at:
+
+```text
+http://localhost:5000
+```
+
+Keep this terminal open.
+
+---
+
+### 8️⃣ Start the Frontend
+
+Open a new terminal.
+
+Inside the `client` folder:
+
+```bash
+npm run dev
+```
+
+Frontend will run at:
+
+```text
+http://localhost:3000
+```
+
+Keep this terminal open.
+
+---
+
+### 9️⃣ Open the Application
+
+Open the following URL in your browser:
+
+```text
+http://localhost:3000
+```
 ## 🔐 Environment Variables
 
 Create a `.env` file in both `server/` and `client/` directories based on the examples below.
