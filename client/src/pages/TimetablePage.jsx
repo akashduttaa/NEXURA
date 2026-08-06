@@ -36,6 +36,7 @@ export default function TimetablePage() {
   const [simulating, setSimulating] = useState(false);
   const [selectedUnavailable, setSelectedUnavailable] = useState([]);
   const [showSimPanel, setShowSimPanel] = useState(false);
+  const [mobileActiveDay, setMobileActiveDay] = useState(DAYS[0]);
 
   useEffect(() => {
     facultyAPI.getAll().then(r => setFaculty(r.data.data)).catch(() => {});
@@ -175,8 +176,8 @@ export default function TimetablePage() {
                 )}
               </GlassCard>
 
-              {/* Grid */}
-              <div className="overflow-x-auto">
+              {/* Desktop Grid View */}
+              <div className="hidden md:block overflow-x-auto">
                 <div className="min-w-[900px]">
                   <div className="grid grid-cols-[100px_repeat(6,1fr)] gap-1">
                     {/* Header */}
@@ -189,7 +190,7 @@ export default function TimetablePage() {
 
                     {/* Time slots */}
                     {TIME_LABELS.map((label, slotIdx) => (
-                      <>
+                      <div key={`slot-row-${slotIdx}`} className="contents">
                         <div key={`label-${slotIdx}`} className="p-2 text-xs text-nexura-text-muted flex items-center justify-center">
                           {label}
                         </div>
@@ -213,9 +214,62 @@ export default function TimetablePage() {
                             </motion.div>
                           );
                         })}
-                      </>
+                      </div>
                     ))}
                   </div>
+                </div>
+              </div>
+
+              {/* Mobile Timeline View */}
+              <div className="block md:hidden">
+                {/* Mobile Day Selector Tabs */}
+                <div className="flex gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
+                  {DAYS.map(day => {
+                    const active = mobileActiveDay === day;
+                    return (
+                      <button
+                        key={day}
+                        onClick={() => setMobileActiveDay(day)}
+                        className={`px-4 py-2.5 rounded-xl text-xs font-semibold font-display tracking-wider transition-all shrink-0 ${active ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-nexura-cyan/50 text-nexura-cyan shadow-[0_0_15px_rgba(0,240,255,0.15)]' : 'bg-white/5 border border-white/5 text-nexura-text-dim hover:text-nexura-text'}`}
+                      >
+                        {day.toUpperCase()}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Mobile Day List */}
+                <div className="space-y-3">
+                  {TIME_LABELS.map((label, slotIdx) => {
+                    const entry = getEntry(mobileActiveDay, slotIdx + 1);
+                    return (
+                      <motion.div
+                        key={`${mobileActiveDay}-${slotIdx}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: slotIdx * 0.05 }}
+                        className={`flex items-stretch gap-4 p-4 rounded-xl border ${entry ? `${courseColors[entry.courseCode] || 'bg-white/5 border-white/10 text-white'} shadow-[0_4px_12px_rgba(0,0,0,0.15)]` : 'bg-white/2 border-white/5 opacity-55'}`}
+                      >
+                        <div className="w-20 shrink-0 flex flex-col justify-center border-r border-white/10 pr-3">
+                          <span className="text-[10px] font-mono font-medium text-nexura-text-dim">Slot {slotIdx + 1}</span>
+                          <span className="text-xs font-bold font-display mt-0.5 text-nexura-cyan">{label}</span>
+                        </div>
+                        <div className="flex-1 min-w-0 flex flex-col justify-center">
+                          {entry ? (
+                            <>
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="font-bold text-sm tracking-wide text-white">{entry.courseCode}</span>
+                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-nexura-text-dim">{entry.roomNumber}</span>
+                              </div>
+                              <div className="text-xs font-semibold truncate mt-1 text-nexura-text-dim">{entry.courseName}</div>
+                            </>
+                          ) : (
+                            <span className="text-xs text-nexura-text-muted italic">No Scheduled Class</span>
+                          )}
+                        </div>
+                      </motion.div>
+                    );
+                  })}
                 </div>
               </div>
 
